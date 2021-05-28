@@ -8,104 +8,81 @@ from eralchemy import render_er
 
 Base = declarative_base()
 
-class User(Base):
-    __tablename__='user'
-    id=Column(Integer,primary_key=True)
-    email=Column(String(250))
-    password=Column(String(250))
-
-class Planet(Base):
-    __tablename__ = 'planet'
+class Characters(Base):
+    __tablename__ = 'characters'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-    diameter = Column(Integer)
-    rotation_period = Column(Integer)
-    orbital_period = Column(Integer)
-    gravity = Column(String(250))
-    population = Column(Integer, nullable=False)
-    climate = Column(String(250))
-    terrain = Column(String(250), nullable=False)
-    surface_water = Column(Integer)  
-    characters = relationship('character', backref='planet', lazy=True)
-    species = relationship('specie', backref='planet', lazy=True)
- 
-
-class Character(Base):
-    __tablename__ = 'character'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    name = Column(String(50), nullable=False)
+    birth_day = Column(String(10), nullable=False)
+    eye_color = Column(String(10), nullable=False)
+    gender = Column(String(10), nullable=False)
+    hair_color = Column(String(10), nullable=False)
     height = Column(Integer, nullable=False)
     mass = Column(Integer, nullable=False)
-    hair_color = Column(String(250))
-    skin_color = Column(String(250))
-    eye_color = Column(String(250))
-    birth_year = Column(String(250), nullable=False)
-    gender = Column(String(30), nullable=False)
-    planet_id = Column(Integer, ForeignKey('planet.id'),nullable=False)
-  
+    skin_color = Column(String(10), nullable=False)
+    homeworld = Column(String(50), nullable=False )
+    species = Column(String(50), nullable=False )
 
-class Specie(Base):
-    __tablename__='specie'
+class Planets(Base):
+    __tablename__ = 'planets'
+    # Here we define columns for the table address.
+    # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-    classification = Column(String(250), nullable=False)
-    designation = Column(String(250))
-    average_height = Column(Integer)
-    average_lifespan = Column(Integer)
-    hair_colors = Column(String(250))
-    skin_colors = Column(String(250))
-    eye_colors = Column(String(250))
-    language = Column(String(250))
-    planet_id = Column(Integer, ForeignKey('planet.id'),nullable=False)
-    characters = relationship('character', secondary='specie_character', lazy='subquery',backref=('specie'))
-   
+    character_id = Column(Integer, ForeignKey('characters.id'))
+    characters = relationship (Characters)
+    diameter = Column(Integer, nullable=False)
+    rotation_period = Column(Integer, nullable=False)
+    orbital_period = Column(Integer, nullable=False)
+    gravity = Column(Integer, nullable=False)
+    population = Column(Integer, nullable=False)
+    climate = Column(String(10), nullable=False)
+    terrain = Column(String(10), nullable=False)
+    surface_water = Column(String(1), nullable=False)
+    residents = Column(String(10), nullable=False)
 
-class SpecieCharacter(Base):
-    __tablename__='specie_character'
-    id_character=Column(Integer, ForeignKey('character.id'),primary_key=True)
-    id_specie=Column(Integer, ForeignKey('specie.id'),primary_key=True)
-   
+class Starships(Base):
+    __tablename__ = 'starships'
+    # Here we define columns for the table address.
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    planets_id = Column(Integer, ForeignKey('planets.id'))
+    planets = relationship (Planets)
+    name = Column(String(100), nullable=False)
+    model = Column(String(50), nullable=False)
+    starships_class = Column(String(50), nullable=False)
+    manufacturer = Column(String(100), nullable=False)
+    cost_in_credits = Column(Integer, nullable=False)
+    length = Column(Integer, nullable=False)
+    crew = Column(Integer, nullable=False)
+    passengers = Column(Integer, nullable=False)
+    max_atmosphering_speed = Column(String(10), nullable=False)
+    hiperdrive_rating = Column(String(5), nullable=False)
+    MGLT = Column(String(25), nullable=False)
+    cargo_capacity = Column(String(25), nullable=False)
+    consumables = Column(String(15), nullable=False)
 
-class Film(Base):
-    __tablename__='film'
-    id=Column(Integer,primary_key=True)
-    name = Column(String(250), nullable=False)
-    episode_id = Column(Integer, nullable=False)
-    producer = Column(String(250), nullable=False)
-    director = Column(String(250), nullable=False)
-    release_date = Column(String(250), nullable=False)
-    opening = Column(String(8000))
-    characters = relationship('character', secondary='film_character', lazy='subquery',backref=('film'))
-    planets = relationship('planet', secondary='film_planet', lazy='subquery',backref=('film'))
-    species = relationship('specie', secondary='film_specie', lazy='subquery',backref=('film'))
+class Users(Base):
+    __tablename__ = 'users'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True, nullable=False)
+    email = Column(String(50), unique=True, nullable=False)
+    password = Column(String(10), nullable=False)
 
-class FilmCharacter(Base):
-    __tablename__='film_character'
-    id_character=Column(Integer, ForeignKey('character.id'),primary_key=True)
-    id_film=Column(Integer, ForeignKey('film.id'),primary_key=True)
+class Favorites(Base):
+    __tablename__ = 'favorites'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    users = relationship(Users)
+    idCharacters = Column(String(10), nullable=False)
+    idPlanets = Column(String(10), nullable=False)
+    idStarships = Column(String(10), nullable=False)
 
-
-class FilmPlanet(Base):
-    __tablename__='film_planet'
-    id_planet=Column(Integer, ForeignKey('planet.id'),primary_key=True)
-    id_film=Column(Integer, ForeignKey('film.id'),primary_key=True)
-  
-
-class FilmSpecie(Base):
-    __tablename__='film_specie'
-    id_specie=Column(Integer, ForeignKey('specie.id'),primary_key=True)
-    id_film=Column(Integer, ForeignKey('film.id'),primary_key=True)
-  
-
-class Favorite(Base):
-    __tablename__='favorite'
-    id=Column(Integer,primary_key=True)
-    user_id = Column(Integer,ForeignKey('user.id'), nullable=False)
-    favorite_id=Column(Integer, nullable=False)
-    favorite_name=Column(String(250),nullable=False)
-    favorite_type = Column(String(1))
-
-
+    
     def to_dict(self):
         return {}
 
